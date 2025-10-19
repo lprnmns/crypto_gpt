@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "q8qZE+0pfr4F9t7YOG35fAdWLQGlTY+pM6POZdH2KrE=",
+  "Source": "BorsaGPT.Api",
+  "BasePath": "_content/BorsaGPT.Api",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

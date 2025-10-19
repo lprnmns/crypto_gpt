@@ -1,0 +1,10 @@
+{
+  "chat.promptFiles.enabled": true,
+  "chat.promptFiles.path": ".github/prompts",
+  "github.copilot.chat.codeGeneration.useInstructionFiles": true,
+  "github.copilot.chat.testGeneration.useInstructionFiles": true,
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  }
+}

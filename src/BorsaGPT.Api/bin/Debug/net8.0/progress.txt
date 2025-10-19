@@ -1,0 +1,9 @@
+﻿=== BorsaGPT Analysis Progress ===
+Window: 2025-10-10T22:00:00.0000000Z|2025-10-11T01:00:00.0000000Z
+Last Update: 2025-10-17 19:50:58 UTC
+Total Wallets: 1560
+Processed: 75
+Remaining: 1485
+Last Wallet Id: 144
+Last Wallet Address: 0xb028b84783a0381d51dcf0e8ef04b5e502958618
+Status: DEVAM EDIYOR

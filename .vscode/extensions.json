@@ -1,0 +1,16 @@
+{
+  "recommendations": [
+    "GitHub.copilot",
+    "GitHub.copilot-chat",
+    "ms-dotnettools.csdevkit",
+    "ms-dotnettools.csharp",
+    "ms-ossdata.vscode-pgsql",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "ms-azuretools.vscode-docker",
+    "ms-playwright.playwright",
+    "humao.rest-client",
+    "vsls-contrib.codetour",
+    "eamodio.gitlens"
+  ]
+}

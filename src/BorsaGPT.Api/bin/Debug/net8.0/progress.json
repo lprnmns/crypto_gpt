@@ -1,0 +1,14 @@
+{
+  "lastProcessedWalletId": 144,
+  "lastProcessedAddress": "0xb028b84783a0381d51dcf0e8ef04b5e502958618",
+  "totalWallets": 1560,
+  "processedCount": 75,
+  "analysisWindowKey": "2025-10-10T22:00:00.0000000Z|2025-10-11T01:00:00.0000000Z",
+  "startedAt": "2025-10-17T19:40:14.1086743Z",
+  "lastCheckpoint": "2025-10-17T19:50:58.5018921Z",
+  "rateLimitHit": false,
+  "rateLimitProvider": null,
+  "nextRetryAfter": null,
+  "isCompleted": false,
+  "errorMessage": null
+}
