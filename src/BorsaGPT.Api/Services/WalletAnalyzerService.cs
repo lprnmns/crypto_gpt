@@ -317,7 +317,7 @@ public class WalletAnalyzerService
                 }
             }
 
-            analysis.ValueT0Usd = valueT0;            analysis.ValueT1Usd = valueT1;
+            analysis.ValueT0Usd = valueT0; analysis.ValueT1Usd = valueT1;
 
             if (valueT0 > 0)
             {

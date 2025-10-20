@@ -1,0 +1,151 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Chain {
+  id      Int     @id
+  name    String
+  httpRpc String?
+  wsRpc   String?
+
+  blocks Block[]
+  tokens Token[]
+  swaps  Swap[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Block {
+  chainId   Int
+  number    BigInt
+  timestamp DateTime
+
+  createdAt DateTime @default(now())
+
+  chain Chain @relation(fields: [chainId], references: [id], onDelete: Cascade)
+
+  @@id([chainId, number])
+  @@index([chainId, timestamp])
+}
+
+model Token {
+  chainId Int
+  address String
+  symbol  String
+  decimals Int
+  name    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  chain Chain @relation(fields: [chainId], references: [id], onDelete: Cascade)
+
+  @@id([chainId, address])
+  @@index([symbol])
+}
+
+model Swap {
+  id            BigInt   @id @default(autoincrement())
+  chainId       Int
+  txHash        String
+  logIndex      Int
+  blockNumber   BigInt
+  timestamp     DateTime
+  pool          String
+  router        String?
+  trader        String
+  tokenIn       String
+  amountInRaw   String
+  tokenOut      String
+  amountOutRaw  String
+  usdIn         Decimal? @db.Decimal(38, 18)
+  usdOut        Decimal? @db.Decimal(38, 18)
+  usdNotional   Decimal? @db.Decimal(38, 18)
+  dex           String?
+  viaAggregator Boolean  @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  chain Chain @relation(fields: [chainId], references: [id], onDelete: Cascade)
+
+  @@unique([chainId, txHash, logIndex])
+  @@index([chainId, timestamp])
+  @@index([trader])
+}
+
+model Label {
+  id         BigInt  @id @default(autoincrement())
+  address    String
+  labelType  String
+  labelValue String
+
+  createdAt DateTime @default(now())
+
+  @@unique([labelType, address])
+  @@index([labelValue])
+}
+
+model Wallet {
+  address    String   @id
+  firstSeen  DateTime?
+  tradeRatio Decimal? @db.Decimal(20, 8)
+  notes      String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  pnls   Pnl[]
+  scores Score[]
+}
+
+model Pnl {
+  id            BigInt   @id @default(autoincrement())
+  walletAddress String
+  day           DateTime
+  realizedUsd   Decimal  @db.Decimal(38, 18)
+  gasUsd        Decimal? @db.Decimal(38, 18)
+  netUsd        Decimal? @db.Decimal(38, 18)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  wallet Wallet @relation(fields: [walletAddress], references: [address], onDelete: Cascade)
+
+  @@unique([walletAddress, day])
+}
+
+model Score {
+  id               BigInt   @id @default(autoincrement())
+  walletAddress    String
+  asOf             DateTime
+  pnlT1            Decimal? @db.Decimal(38, 18)
+  pnlT7            Decimal? @db.Decimal(38, 18)
+  winrate          Decimal? @db.Decimal(10, 6)
+  tradeRatio       Decimal? @db.Decimal(10, 6)
+  slippageAvgBps   Decimal? @db.Decimal(10, 6)
+  repeatability    Decimal? @db.Decimal(10, 6)
+  liquidityQuality Decimal? @db.Decimal(10, 6)
+  score            Decimal? @db.Decimal(10, 6)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  wallet Wallet @relation(fields: [walletAddress], references: [address], onDelete: Cascade)
+
+  @@unique([walletAddress, asOf])
+  @@index([score])
+}

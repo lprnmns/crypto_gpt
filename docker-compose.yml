@@ -6,15 +6,15 @@ services:
     container_name: borsagpt-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: borsagpt_user
-      POSTGRES_PASSWORD: Dev123!Postgres
-      POSTGRES_DB: borsagpt_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: whale
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U borsagpt_user -d borsagpt_db"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d whale"]
       interval: 10s
       timeout: 5s
       retries: 5

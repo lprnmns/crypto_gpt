@@ -149,17 +149,17 @@ app.MapPost("/api/candidates", async (CreateCandidateDto dto, BorsaGptDbContext 
 
 // POST /api/analysis/start - Cüzdan analizini başlat
 app.MapPost("/api/analysis/start", async (
-    WalletAnalyzerService analyzer, 
+    WalletAnalyzerService analyzer,
     ILogger<Program> logger) =>
 {
     try
     {
         logger.LogWarning("🚀 [ENDPOINT] Analiz endpoint'i çağrıldı");
-        
+
         // Analizi başlat (arka planda değil, blokleyici)
         // Not: Bu endpoint uzun sürebilir (1-3 saat)
         await analyzer.AnalyzeAllWalletsAsync();
-        
+
         logger.LogInformation("✅ [ENDPOINT] Analiz başarıyla tamamlandı");
         return Results.Ok(new { message = "Analiz tamamlandı", success = true });
     }
@@ -217,24 +217,24 @@ app.MapGet("/api/analysis/export-csv", async (BorsaGptDbContext db) =>
     var results = await db.CandidateAnalysis
         .OrderByDescending(a => a.SimpleReturn ?? decimal.MinValue) // En kârlılar üstte
         .ToListAsync();
-    
+
     // CSV header ve satırlarını oluştur
     var csv = new System.Text.StringBuilder();
     csv.AppendLine("WalletAddress,T0_Block,T1_Block,ValueT0_USD,ValueT1_USD,SimpleReturn_Percent,TokenCount,PriceMissing,AnalyzedAt,Notes");
-    
+
     foreach (var row in results)
     {
         // CSV'de virgül içeren notlar için escape (çift tırnak sarmalama)
         var notes = row.Notes?.Replace("\"", "\"\"") ?? "";
-        
+
         // ⚠️ CultureInfo: Decimal sayılar için nokta kullan (virgül yerine)
         var v0 = row.ValueT0Usd?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "0";
         var v1 = row.ValueT1Usd?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "0";
         var pnl = row.SimpleReturn?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "0";
-        
+
         csv.AppendLine($"{row.WalletAddress},{row.T0Block},{row.T1Block},{v0},{v1},{pnl},{row.TokenCount},{row.PriceMissing},\"{row.AnalyzedAt:yyyy-MM-dd HH:mm:ss}\",\"{notes}\"");
     }
-    
+
     // CSV dosyası olarak döndür (Content-Disposition header ile indirme tetikle)
     var bytes = System.Text.Encoding.UTF8.GetBytes(csv.ToString());
     return Results.File(bytes, "text/csv", $"candidate_analysis_{DateTime.UtcNow:yyyyMMdd_HHmmss}.csv");

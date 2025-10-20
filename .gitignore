@@ -1,0 +1,28 @@
+# Build outputs
+/bin/
+/obj/
+
+# Logs & runtime
+*.log
+
+# Environment files
+.env
+*.env.local
+
+# Node modules
+node_modules/
+pnpm-debug.log*
+*.tsbuildinfo
+
+# Generated Prisma client
+/whale-copytrade-next/generated/
+
+# Frontend artifacts
+/whale-copytrade-next/.next/
+/whale-copytrade-next/out/
+/whale-copytrade-next/.turbo/
+
+# IDE
+.idea/
+.DS_Store
+Thumbs.db
