@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BorsaGPT.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e4871565c4a80800f491350c46606d9fdbdfeb03")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+20ac8c489c164462acfe63022dc59899eb56e5c7")]
 [assembly: System.Reflection.AssemblyProductAttribute("BorsaGPT.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BorsaGPT.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

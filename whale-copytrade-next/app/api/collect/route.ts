@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { collectSwaps } from "@/lib/collect";
+import { priceSwaps } from "@/lib/price";
 import { prisma } from "@/db/client";
 
 const requestSchema = z.object({
@@ -17,7 +18,7 @@ export async function POST(request: Request) {
 
     if (body.fromBlock > body.toBlock) {
       return NextResponse.json(
-        { error: "fromBlock toBlock değerinden büyük olamaz." },
+        { error: "fromBlock must be less than or equal to toBlock." },
         { status: 400 },
       );
     }
@@ -58,22 +59,32 @@ export async function POST(request: Request) {
       inserted = result.count;
     }
 
+    const priceSummary = await priceSwaps({
+      chain: body.chain,
+      fromBlock: body.fromBlock,
+      toBlock: body.toBlock,
+      usdMinOverride: body.usdMin,
+    });
+
     return NextResponse.json({
       totalLogs,
       collected: items.length,
       inserted,
+      priced: priceSummary.priced,
+      missingPrices: priceSummary.missing,
+      filtered: priceSummary.filtered,
       tookMs: Date.now() - started,
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: "Geçersiz istek", issues: error.flatten() },
+        { error: "Invalid request", issues: error.flatten() },
         { status: 400 },
       );
     }
 
     const message =
-      error instanceof Error ? error.message : "Beklenmeyen bir hata oluştu";
+      error instanceof Error ? error.message : "Unexpected server error";
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
