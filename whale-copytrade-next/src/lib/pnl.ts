@@ -1,8 +1,8 @@
-import { Decimal } from "@prisma/client/runtime/library";
-import { prisma } from "@/db/client";
-import type { Candidate } from "@/lib/mine";
+import { Decimal } from '@prisma/client/runtime/library';
+import { prisma } from '@/db/client';
+import type { Candidate } from '@/lib/mine';
 
-export type PnlMode = "fifo" | "lifo";
+export type PnlMode = 'fifo' | 'lifo';
 
 interface SwapRow {
   chainId: number;
@@ -21,29 +21,23 @@ interface Position {
   timestamp: Date;
 }
 
-interface PnlResult {
+export interface PnlResult {
   realized: number;
   gross: number;
   trades: number;
   realizedTokens: number;
 }
 
-const BATCH_SIZE = 100;
-
 function decimal(value: Decimal | null): number {
   if (!value) return 0;
-  if (typeof value === "number") return value;
-  if (typeof (value as unknown as { toNumber?: () => number }).toNumber === "function") {
+  if (typeof value === 'number') return value;
+  if (typeof (value as unknown as { toNumber?: () => number }).toNumber === 'function') {
     return (value as unknown as { toNumber: () => number }).toNumber();
   }
   return Number(value);
 }
 
-function settlePosition(
-  position: Position,
-  usdOut: number,
-  timestamp: Date,
-): number {
+function settlePosition(position: Position, usdOut: number, timestamp: Date): number {
   const gain = usdOut - position.costBasis;
   position.remaining = 0;
   position.costBasis = 0;
@@ -62,7 +56,7 @@ function reducePositions(
   let realized = 0;
 
   const iterator =
-    mode === "fifo"
+    mode === 'fifo'
       ? positions.values()
       : (function* lifo() {
           for (let i = positions.length - 1; i >= 0; i -= 1) {
@@ -90,56 +84,28 @@ function reducePositions(
 }
 
 async function fetchSwaps(wallet: string): Promise<SwapRow[]> {
-  const result: SwapRow[] = [];
-  let cursor: Date | null = null;
-
-  for (;;) {
-    const rows = await prisma.swap.findMany({
-      where: { trader: wallet },
-      orderBy: [
-        { timestamp: "asc" },
-        { blockNumber: "asc" },
-        { logIndex: "asc" },
-      ],
-      take: BATCH_SIZE,
-      ...(cursor
-        ? {
-            skip: 1,
-            cursor: {
-              trader_timestamp_blockNumber_logIndex: {
-                trader: wallet,
-                timestamp: cursor,
-                blockNumber: 0n,
-                logIndex: 0,
-              },
-            },
-          }
-        : {}),
-      select: {
-        chainId: true,
-        tokenIn: true,
-        tokenOut: true,
-        usdIn: true,
-        usdOut: true,
-        usdNotional: true,
-        timestamp: true,
-      },
-    });
-
-    if (rows.length === 0) break;
-
-    result.push(...rows);
-    const last = rows[rows.length - 1];
-    cursor = last.timestamp;
-    if (rows.length < BATCH_SIZE) break;
-  }
-
-  return result;
+  return prisma.swap.findMany({
+    where: { trader: wallet },
+    orderBy: [
+      { timestamp: 'asc' },
+      { blockNumber: 'asc' },
+      { logIndex: 'asc' },
+    ],
+    select: {
+      chainId: true,
+      tokenIn: true,
+      tokenOut: true,
+      usdIn: true,
+      usdOut: true,
+      usdNotional: true,
+      timestamp: true,
+    },
+  });
 }
 
 export async function evaluateCandidate(
   candidate: Candidate,
-  mode: PnlMode = "fifo",
+  mode: PnlMode = 'fifo',
 ): Promise<PnlResult> {
   const wallet = candidate.wallet.toLowerCase();
   const swaps = await fetchSwaps(wallet);
@@ -197,7 +163,7 @@ export async function evaluateCandidate(
 
 export async function evaluateCandidates(
   candidates: Candidate[],
-  mode: PnlMode = "fifo",
+  mode: PnlMode = 'fifo',
 ): Promise<Record<string, PnlResult>> {
   const result: Record<string, PnlResult> = {};
   for (const candidate of candidates) {
@@ -205,4 +171,6 @@ export async function evaluateCandidates(
   }
   return result;
 }
+
+
 
